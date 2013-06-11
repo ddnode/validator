@@ -1,0 +1,36 @@
+.pln{color:#000}
+@media screen{
+  .str{color:#080}
+  .kwd{color:#00b}
+  .com{color:#236E25;}
+  .typ{color:#606}
+  .lit{color:#066}
+  .pun,.opn,.clo{color:#660}
+  .tag{color:#00f}
+  .atn{color:#f00}
+  .atv{color:#080}
+  .dec,.var{color:#606}
+  .fun{color:red}
+
+  .html .tag {color:#881280;}
+  .html .atn {color:#994500;}
+  .html .atv {color:#0000EE;}
+  .js .str {color:#808080;}
+  .js .lit {color:#F70066;}
+  .js .typ {color:#F9243E;}
+}
+@media print,projection{
+  .str{color:#060}
+  .kwd{color:#006;font-weight:bold}
+  .com{color:#600;font-style:italic}
+  .typ{color:#404;font-weight:bold}
+  .lit{color:#044}
+  .pun,.opn,.clo{color:#440}
+  .tag{color:#006;font-weight:bold}
+  .atn{color:#404}
+  .atv{color:#060}
+}
+pre.prettyprint{padding:2px 2px 2px 10px;border-left:2px solid #ccc; background:#fafafa;}
+ol.linenums{margin-top:0;margin-bottom:0}
+li.L0,li.L1,li.L2,li.L3,li.L5,li.L6,li.L7,li.L8{list-style-type:none}
+li.L1,li.L3,li.L5,li.L7,li.L9{background:#eee}

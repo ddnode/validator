@@ -1,65 +1,500 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Validator by niceue</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0">
+    <title> Validator </title>
+    <meta name="description" content="简单、智能、令人愉悦的表单验证解决方案">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/jquery-1.7.2.min.js"></script>
+    <!-- prettify -->
+    <link rel="stylesheet" href="js/prettify/prettify.css">
+    <script src="js/prettify/prettify.js"></script>
+    <!-- plugin -->
+    <link rel="stylesheet" href="js/validator/jquery.validator.css">
+    <script src="js/validator/jquery.validator.js"></script>
+    <script src="js/validator/local/zh_CN.js"></script>
+    <script src="js/main.js"></script>
+</head>
+<body>
+<div class="sidebar">
+    <h1><span>Valid</span><em>ator</em> <sup class="version">[0.1.0]</sup></h1>
+    <div class="description">简单、智能、令人愉悦的表单验证解决方案</div>
+    <h3>API</h3>
+    <ol>
+        <li><a href="#plugin_usage">如何使用</a></li>
+        <li><a href="#plugin_config">配置说明 (options)</a></li>
+        <li><a href="#plugin_rule">内置规则一览表 (rule)</a></li>
+        <li><a href="#plugin_method">方法</a></li>
+        <li><a href="#plugin_event">事件</a></li>
+    </ol>
+    <h3>DEMO</h3>
+    <ol>
+        <li><a href="demos/simple.html">示例：简单调用</a></li>
+        <li><a href="demos/match.html">示例：两个字段匹配</a></li>
+        <li><a href="demos/length.html">示例：字符串长度</a></li>
+        <li><a href="demos/range.html">示例：数值范围</a></li>
+        <li><a href="demos/checked.html">示例：选中多少项</a></li>
+        <li><a href="demos/remote.html">示例：远程验证</a></li>
+        <li><a href="demos/safe.html">示例：过滤不安全字符</a></li>
+        <li><a href="#plugin_demo_complex">示例：综合调用</a></li>
+        <li><a href="#plugin_demo_update">示例：动态更新规则</a></li>
+        <li><a href="#plugin_demo_event">示例：处理事件</a></li>
+    </ol>
+    <div class="totop"><a href="#">回到顶部</a></div>
+</div>
+  
+  
+  <div class="main-wrapper">
+    <div class="main">
+<!-- API -->
 
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="javascripts/scale.fix.js"></script>
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-  </head>
-  <body>
-    <div class="wrapper">
-      <header>
-        <h1 class="header">Validator</h1>
-        <p class="header">简单，智能，令人愉悦的表单验证解决方案</p>
+<h2 id="plugin_usage">如何使用</h2>
+<p>两种方式：</p>
+<ol>
+<li><b>通过JS配置和调用，无需改变DOM。</b><br>
+更加灵活，而且支持全部参数，参见<a href="#plugin_config">options</a><br>
+@example
+<pre class="demo">
+$('form[name="register"]').validator({
+    stopOnError: false,
+    timely: false,
+    fields: {
+        'email': 'required;email;'
+    }
+});
+</pre>
+</li>
 
-        <ul>
-          <li class="download"><a class="buttons" href="https://github.com/niceue/validator/zipball/master">Download ZIP</a></li>
-          <li class="download"><a class="buttons" href="https://github.com/niceue/validator/tarball/master">Download TAR</a></li>
-          <li><a class="buttons github" href="https://github.com/niceue/validator">View On GitHub</a></li>
-        </ul>
+<li><b>通过在DOM上绑定Attribute，无需js调用。</b><br>
+在字段上绑定规则，支持的参数：<br>
+<p>data-rule，
+data-rule-xxx，
+data-msg-xxx，
+data-tip，
+data-ok，
+data-target</p>
+在form上以json字符串形式绑定参数data-validator-option，<br>
+支持除rules,messages,fields外的所有参数，参见<a href="#plugin_config">options</a>，<br>
+如果参数全部在DOM元素上面传递，那么js就不需要初始化了<br>
+@example
+<pre class="demo">
+&lt;form name="register" data-validator-option="{
+    stopOnError: false,
+    timely: false
+}"&gt;
+    &lt;label&gt;邮箱&lt;/label&gt;
+    &lt;input name="email" data-rule="required;email;"&gt;
+&lt;/form&gt;
+</pre>
+</li>
+</ol>
 
-        <p class="header">This project is maintained by <a class="header name" href="https://github.com/niceue">niceue</a></p>
 
+<h2 id="plugin_config">配置说明 (options)</h2>
 
-      </header>
-      <section>
-        <h2>
-<a name="validator" class="anchor" href="#validator"><span class="octicon octicon-link"></span></a>validator</h2>
+<div class="settings">
+<h3>debug <em>{Boolean}</em></h3>
+<p><b>默认: </b>0<br>
+是否启用调试模式，可用值:</p>
+<ul>
+    <li>0 || false: 关闭调试信息</li>
+    <li>1 || true: 启用调试信息</li>
+    <li>2: 启用调试信息，并且不论表单是否验证成功都提交表单，便于对比后端的验证</li>
+</ul>
 
-<p>Simple, smart and pleasant verification solution.</p>
+<h3>timely <em>{Boolean}</em></h3>
+<p><b>默认: </b>2<br>
+是否启用实时验证，可用值:</p>
+<ul>
+    <li>0 || false: 关闭实时验证，将只在提交表单的时候进行验证</li>
+    <li>1 || true: 启用实时验证，在字段失去焦点后验证该字段</li>
+    <li>2: 启用实时验证，在输入的同时验证该字段</li>
+</ul>
 
-<h2>
-<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h2>
+<h3>stopOnError <em>{Boolean}</em></h3>
+<p><b>默认: </b>false<br>是否在验证出错时停止继续验证</p>
 
-<p>Include css and js file:</p>
+<h3>showError <em>{Boolean}</em></h3>
+<p><b>默认: </b>true<br>控制是否显示错误消息，以及显示的位置</p>
 
-<div class="highlight"><pre><span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">href=</span><span class="s">"path/to/jquery.validator.css"</span><span class="nt">&gt;</span>
-<span class="nt">&lt;script </span><span class="na">type=</span><span class="s">"text/javascript"</span> <span class="na">src=</span><span class="s">"path/to/jquery.validator.js"</span><span class="nt">&gt;&lt;/script&gt;</span>
-</pre></div>
+<h3>ignore <em>{jqSelector}</em></h3>
+<p>指定需要忽略验证的元素的jQuery选择器</p>
 
-<h2>
-<a name="bugs--contributions" class="anchor" href="#bugs--contributions"><span class="octicon octicon-link"></span></a>Bugs / Contributions</h2>
+<h3>rules <em>{Object}</em></h3>
+<p>自定义用于当前实例的规则，Example: </p>
+<pre class="demo" style="margin-left:4em">
+$('form').validator({
+    rules: {
+        myRule: function(el, field, param){
+            do something...
+        },
+        another: [/^\w*$/, '请输入字母或下划线']
+    },
+    fields: {
+        'foo': required;myRule[param];another'
+    }
+});
+</pre>
+
+<h3>messages <em>{Object}</em></h3>
+<p>自定义用于当前实例的消息，Example:</p>
+<pre class="demo" style="margin-left:4em">
+$('form').validator({
+    messages: {
+        required: "请填写该字段",
+        email: "请检查邮箱格式",
+    },
+    fields: {
+        'email': 'required;email;'
+    }
+});
+</pre>
+
+<h3 id="options_fields">fields <em>{Object}</em></h3>
+<p>待验证的字段集合，键为字段的name值或者"#"+字段id。有两种用法：</p>
+<ol>
+    <li>快捷字符串传参："name": "fieldLabel:rule1;rule2;rule3..."，其中fieldLabel可选，用于替换错误消息中的字段名字</li>
+    <li>对象传参：<br>
+<pre class="demo">
+fields: {
+    "name": {
+        rule: "fieldLabel:rule1;rule2;rule3...",
+        msg: {
+            rule1: "",
+            rule2: "",
+            rule3: "",
+            ...
+        },
+        tip: "",
+        ok: "",
+        timely: false,
+        target: ""
+    }
+}
+</pre>
+    </li>
+</ol>
 
 <ul>
-<li><a href="https://github.com/niceue/validator/issues">Report a bug</a></li>
-<li>To contribute or send an idea, github message me or fork the project</li>
-</ul><h2>
-<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h2>
+    <li>fields[name].rule <em>{String}</em><br>
+       <p>字段的验证规则，多个规则用分号（;）分隔，支持使用方括号（[ ]）或者圆括号（( )）传参。<a href="#plugin_rule">查看内置规则</a></p> 
+    </li>
+    <li>fields[name].msg <em>{Object}</em><br>
+        <p>自定义字段中每个规则的错误消息</p>
+    </li>
+    <li>fields[name].tip <em>{String}</em><br>
+        <p>自定义获得焦点时的友好提示信息</p>
+    </li>
+    <li>fields[name].ok <em>{String}</em><br>
+        <p>自定义字段验证成功后显示的消息</p>
+    </li>
+    <li>fields[name].timely <em>{Boolean}</em><br>
+        <p>是否启用实时验证，默认值继承自options的timely参数</p>
+    </li>
+    <li>fields[name].target <em>{jqSelector}</em><br>
+        <p>验证当前字段，但是实际上在target的元素上提示错误消息，<br>
+        如果目标元素是消息的容器，即有className:"msg-box"，那么依据消息容器的配置来显示；<br>
+        其他情况下都是以target元素为基准点，插入一条消息
+        </p>
+    </li>
+</ul>
 
-<p>embedSWF is available under the terms of the <a href="https://github.com/niceue/validator/blob/master/LICENSE.txt">MIT License</a>.</p>
-      </section>
-      <footer>
-        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
-      </footer>
+
+
+<h3 id="options_valid">valid(form)<em>{Function}</em></h3>
+<p>表单验证成功后的回调，有一个参数：当前表单对象，支持<a href="#plugin_event">事件</a>绑定</p>
+
+<h3 id="options_invalid">invalid(form)<em>{Function}</em></h3>
+<p>表单验证失败后的回调，有一个参数：当前表单对象，支持<a href="#plugin_event">事件</a>绑定</p>
+
+
+
+</div>
+
+<h2 id="plugin_rule">内置规则一览表 (rule)</h2>
+<table class="table">
+<thead>
+<tr><th>rule</th>
+    <th>参数</th>
+    <th>错误消息</th>
+    <th>描述</th>
+    <th>例子</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+    <th>required</th>
+    <td>可选,<br>排除的值</td>
+    <td>{0}不能为空!</td>
+    <td>
+    必填项，<br>不能为空
+    </td>
+    <td>
+<pre>
+required
+required[0] //输入值为0也认为是空
+</pre> 
+    </td>
+</tr>
+
+<tr>
+    <th>integer</th>
+    <td>可选,<br>标识</td>
+    <td>请输入整数!</td>
+    <td>整数</td>
+    <td>
+<pre>
+integer         //请输入整数
+integer[*]      //请输入整数
+integer[+]      //请输入正整数
+integer[+0]     //请输入正整数或0
+integer[-]      //请输入负整数
+integer[-0]     //请输入负整数或0
+</pre> 
+    </td>
+</tr>
+
+<tr>
+    <th>match</th>
+    <td>必选,<br>对比字段的name</td>
+    <td>{0}与{1}不一致!</td>
+    <td>
+    与另一个字段匹配
+    </td>
+    <td>
+<pre>
+match[password]  //与password字段的值匹配
+match[lt,money]  //小于money字段的值
+match[lte,money] //小于等于money字段的值
+match[eq,money]  //等于money字段的值匹配
+match[gte,money] //大于等于money字段的值
+match[gt,money]  //大于money字段的值
+</pre> 
+    </td>
+</tr>
+
+<tr>
+    <th>range</th>
+    <td>必选,<br>范围值</td>
+    <td>请输入0到99的整数!</td>
+    <td>数值范围</td>
+    <td>
+<pre>
+range[0~99]      //请输入1到99的整数
+range[~99]       //请输入小于99的整数
+range[0~]        //请输入大于0的整数
+</pre>
+</td>
+</tr>
+
+<tr>
+    <th>length</th>
+    <td>必选,<br>范围值<br><br>可选,<br>是否计算真实长度</td>
+    <td>请输入6-16个字符!</td>
+    <td>验证字符长度</td>
+    <td>
+<pre>
+length[6~16]       //6-16个字符
+length[6]          //6个字符
+length[~6]         //小于6个字符
+length[6~]         //大于6个字符
+
+length[~6, true]   //小于6个字符,全角字符计算双字符
+</pre> 
+    </td>
+</tr>
+
+<tr>
+    <th>checked</th>
+    <td>必选,<br>范围值</td>
+    <td>请最少选择2项!</td>
+    <td>对于checkbox或radio<br>必须要选中多少项</td>
+    <td>
+<pre>
+checked             //必填，相当于required
+checked[3~5]        //请选择3到5项
+checked[3]          //请选择3项
+checked[~5]         //请选择少于5项
+checked[3~]         //请选择大于3项
+</pre>
+</td>
+</tr>
+
+<tr>
+    <th>remote</th>
+    <td>必选，<br>url地址</td>
+    <td>{0}已被使用! 或者 后端返回的消息</td>
+    <td>远程验证</td>
+    <td>
+<pre>
+remote[path/to/server.php]
+</pre> 
+    </td>
+</tr>
+
+</tbody>
+</table>
+
+<!--方法-->
+<h2 id="plugin_method">方法</h2>
+
+<h3>$('form').validator(options)</h3>
+<p>初始化表单验证</p>
+
+<h3>$('form').data('validator') </h3>
+<p>获取表单验证的实例</p>
+<p>@base: 验证已经初始化</p>
+<p>@return: 实例（instance）</p>
+<p>@example:</p>
+<pre class="demo ml40">
+var instance = $('form').validator().data('validator');
+</pre>
+
+<h3>$('field selector').isValid()</h3>
+<p>判断某个字段是否验证通过</p>
+<p>@base: 验证已经初始化
+<br>@example:
+</p>
+<pre class="demo ml40">
+$('form').validator('mapMsg', {
+    username: '用户名已被使用',
+    password: '密码太弱了'
+});
+</pre>
+
+<h3>$('form').validator('<span class="red">destroy</span>') 
+<br>或者 instance.destroy()
+</h3>
+<p>销毁表单验证，包括事件和实例</p>
+<p>@base: 验证已经初始化</p>
+
+<h3>$('form').validator( '<span class="red">mapMsg</span>', obj )
+<br>或者 instance.mapMsg(obj)
+</h3>
+<p>用来显示服务器的验证消息。(提交表单并且服务器验证完毕后，返回一个name为键、msg为value的json传入此方法中)</p>
+<p>@base: 验证已经初始化</p>
+<p>@param: {Object} obj name为键、msg为值的对象</p>
+<p>@example:</p>
+<pre class="demo ml40">
+$('form').validator('mapMsg', {
+    username: '用户名已被使用',
+    password: '密码太弱了'
+});
+</pre>
+
+<h3>$('form').validator( '<span class="red">setMsg</span>', obj )
+<br>或者 instance.setMsg(obj)
+</h3>
+<p>自定义消息，可用来动态改变某个表单验证的消息（优先于内置、全局、传参的消息）</p>
+<p>@base: 验证已经初始化</p>
+<p>@param: {Object} obj rule名为键、msg为值的对象</p>
+<p>@example:</p>
+<pre class="demo ml40">
+$('form').validator('setMsg', {
+    username: '用户名已被使用',
+    password: '密码太弱了'
+});
+</pre>
+
+<h3>$('form').validator( '<span class="red">setRule</span>', obj )
+<br>或者 instance.setRule(obj)
+</h3>
+<p>自定义规则，可用来动态改变某个表单验证的规则（优先于内置、全局、传参的规则）</p>
+<p>@base: 验证已经初始化</p>
+<p>@param: {Object} obj rule名为键、msg为值的对象</p>
+<p>@example: 以下示例展现了两种定义规则的方式</p>
+<pre class="demo ml40">
+$('form').validator('setRule', {
+    username: [/^\w{3,12}$/, "请输入3-12位数字、字母、下划线"],
+    password: function(element, params, field){
+        do something...
+        If verification returns true, otherwise it returns an error message
+    }
+});
+</pre>
+
+
+<h3>$('form').validator( '<span class="red">setField</span>', key, field )
+<br>或者 instance.setField( key, field )
+</h3>
+<p>更新一个字段信息.
+<br>如果是新字段就等于添加了一个字段；
+<br>如果field===null，并且实例中存在字段key，则会删除字段key（不验证key字段）
+</p>
+<p>@base: 验证已经初始化</p>
+<p>@param: {String} key 字段名</p>
+<p>@param: {String|Object} field 字段信息</p>
+<p>@example:</p>
+<pre class="demo ml40">
+$('form').validator("setField", "username", "用户名:required;username;");
+</pre>
+
+<h3>$('form').validator( '<span class="red">setField</span>', fields )
+<br>或者 instance.setField( fields )
+</h3>
+<p>批量更新字段信息.
+<br>如果是新字段就等于添加了一个字段；
+<br>如果某个字段的值为null，并且实例中存在该字段，则会删除该字段（不验证该字段）
+</p>
+<p>@base: 验证已经初始化</p>
+<p>@param: {Object} fields 字段信息，参见<a href="#options_fields">options中fields的配置</a></p>
+<p>@example:</p>
+<pre class="demo ml40">
+$('form').validator('setField', {
+    name: 'username', 
+    rule: 'required;username'
+});
+</pre>
+
+<!--事件-->
+<h2 id="plugin_event">事件</h2>
+<p><b>valid.form</b><br>表单验证成功，同<a href="#options_valid">options中valid</a></p>
+<p>example:</p>
+<pre class="demo ml40">
+$('form').on('valid.form', function(e, form){
+    do something...
+});
+</pre><br>
+
+<p><b>invalid.form</b><br>表单验证失败，同<a href="#options_invalid">options中invalid</a></p>
+<p>example:</p>
+<pre class="demo ml40">
+$('form').on('invalid.form', function(e, form){
+    do something...
+});
+</pre><br>
+
+<p><b>valid.field</b><br>字段验证成功</p>
+<p>example:</p>
+<pre class="demo ml40">
+$('input[name="username"]').on('valid.field', function(e, form){
+    do something...
+});
+</pre><br>
+
+<p><b>invalid.field</b><br>字段验证失败</p>
+<p>example:</p>
+<pre class="demo ml40">
+$('input[name="username"]').on('invalid.form', function(e, form){
+    do something...
+});
+</pre><br>
+
+<p><b>$(element).trigger('validate');</b><br>触发元素进行验证</p>
+<br><br>
+
+
     </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-		
+  </div>
+
+<!--div id="footer-wrapper">
+  <footer>
+    <p class="powered">
+        <a href="http://niceue.com">Jony</a>
+    </p>
+  </footer>
+</div-->
   </body>
 </html>
