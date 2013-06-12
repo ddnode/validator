@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="index">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -20,10 +20,11 @@
 <body>
 <div class="sidebar">
     <h1><span>Valid</span><em>ator</em> <sup class="version">[0.1.0]</sup></h1>
-    <div class="description">简单、智能、令人愉悦的表单验证解决方案</div>
+    <div class="description">简单、智能、令人愉悦的表单验证</div>
     <h3>API</h3>
     <ol>
         <li><a href="#plugin_usage">如何使用</a></li>
+        <li><a href="#plugin_common">公共定义</a></li>
         <li><a href="#plugin_config">配置说明 (options)</a></li>
         <li><a href="#plugin_rule">内置规则一览表 (rule)</a></li>
         <li><a href="#plugin_method">方法</a></li>
@@ -91,11 +92,23 @@ data-target</p>
 </li>
 </ol>
 
+<h2 id="plugin_common">公共定义</h2>
+
+<h3>规则</h3>
+<h3>字段</h3>
+<h3>表单</h3>
+<h3>消息</h3>
+<h3>配置</h3>
+<h3>主题</h3>
+<h3>方法</h3>
+<h3>事件</h3>
+
+
 
 <h2 id="plugin_config">配置说明 (options)</h2>
 
 <div class="settings">
-<h3>debug <em>{Boolean}</em></h3>
+<h3>debug <em>{Number | Boolean}</em></h3>
 <p><b>默认: </b>0<br>
 是否启用调试模式，可用值:</p>
 <ul>
@@ -104,7 +117,7 @@ data-target</p>
     <li>2: 启用调试信息，并且不论表单是否验证成功都提交表单，便于对比后端的验证</li>
 </ul>
 
-<h3>timely <em>{Boolean}</em></h3>
+<h3>timely <em>{Number | Boolean}</em></h3>
 <p><b>默认: </b>2<br>
 是否启用实时验证，可用值:</p>
 <ul>
@@ -116,11 +129,22 @@ data-target</p>
 <h3>stopOnError <em>{Boolean}</em></h3>
 <p><b>默认: </b>false<br>是否在验证出错时停止继续验证</p>
 
-<h3>showError <em>{Boolean}</em></h3>
-<p><b>默认: </b>true<br>控制是否显示错误消息，以及显示的位置</p>
+<h3>showError <em>{Number | Boolean | jqSelector}</em></h3>
+<p><b>默认: </b>true<br>
+控制是否显示错误消息，以及显示的位置，可用值：</p>
+<ul>
+    <li>0 || false: 关闭错误消息</li>
+    <li>1 || true: 启用错误消息</li>
+    <li>jqSelector: 启用错误消息，并且全部消息显示在jqSelector的位置</li>
+</ul>
 
 <h3>ignore <em>{jqSelector}</em></h3>
-<p>指定需要忽略验证的元素的jQuery选择器</p>
+<p>指定需要忽略验证的元素的jQuery选择器，Example: </p>
+<pre class="demo" style="margin-left:4em">
+$('form').validator({
+    ignore: ':hidden'
+});
+</pre>
 
 <h3>rules <em>{Object}</em></h3>
 <p>自定义用于当前实例的规则，Example: </p>
