@@ -1,0 +1,3 @@
+[submodule "js/validator"]
+    path = js/validator
+	url = git://github.com/niceue/validator.git
